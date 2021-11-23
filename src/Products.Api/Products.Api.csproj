@@ -6,7 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <DebugType>portable</DebugType>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-    <UserSecretsId>7443f62f-d060-4e0c-9e60-e03f947d2338</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -39,7 +38,6 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="Data\Repositories\" />
     <Folder Include="Models\Responds\" />
     <Folder Include="Models\Requests\" />
   </ItemGroup>
