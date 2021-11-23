@@ -7,7 +7,7 @@ namespace Products.Api.Data.Repositories
 {
     public class ProductRepository : RepositoryBase<Product>, IProductRepository
     {
-        public ProductRepository(DbContext dbContext) : base(dbContext) { }
+        public ProductRepository(AppDbContext dbContext) : base(dbContext) { }
 
         public void CreateProduct(Product product) => Create(product);
         public void DeleteProduct(Product product) => Delete(product);
