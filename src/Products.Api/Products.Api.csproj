@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Entities\" />
+    <Folder Include="Data\Repositories\" />
+    <Folder Include="Models\Responds\" />
+    <Folder Include="Models\Requests\" />
+    <Folder Include="Mapping\" />
+  </ItemGroup>
+
+</Project>
