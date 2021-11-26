@@ -3,21 +3,21 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-using Products.Api.Data.Repositories.V1;
+using Products.Api.Data.Repositories.Products.V1;
 using Products.Api.Dtos;
 using Products.Api.Swagger.Examples;
 
 using Swashbuckle.AspNetCore.Filters;
 
-namespace Products.Api.Controllers.V1
+namespace Products.Api.Controllers.Products.V1
 {
     /// <summary>
     /// Products controller
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/[controller]")]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/products")]
+    [Route("api/v{version:apiVersion}/products")]
     [Produces("application/json")]
     public class ProductsController : ControllerBase
     {
@@ -87,7 +87,7 @@ namespace Products.Api.Controllers.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-        [SwaggerRequestExample(typeof(JsonPatchDocument<ProductUpdateDto>),typeof(PatchProductDescriptionExample))]
+        [SwaggerRequestExample(typeof(JsonPatchDocument<ProductUpdateDto>), typeof(PatchProductDescriptionExample))]
         public async Task<ActionResult<ProductDto>> UpdateProductDescription(int id, [FromBody] JsonPatchDocument<ProductUpdateDto> patchDoc)
         {
             _logger.LogInformation($"Updating product: {id} description");

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-
+﻿
 using Products.Api.Data;
 using Products.Api.Data.Seeder;
 
@@ -12,9 +11,7 @@ namespace Products.Api.Tests.Helpers.Seeders
         private readonly ApplicationDbContext _applicationDbContext;
 
         public TestDatabaseSeeder(ApplicationDbContext applicationDbContext)
-        {
-            _applicationDbContext = applicationDbContext;
-        }
+            => _applicationDbContext = applicationDbContext;
 
         public void Seed()
         {

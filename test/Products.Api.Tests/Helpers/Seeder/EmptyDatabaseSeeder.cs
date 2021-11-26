@@ -9,9 +9,7 @@ namespace Products.Api.Tests.Helpers.Seeders
         private readonly ApplicationDbContext _applicationDbContext;
 
         public EmptyDatabaseSeeder(ApplicationDbContext applicationDbContext)
-        {
-            _applicationDbContext = applicationDbContext;
-        }
+            => _applicationDbContext = applicationDbContext;
 
         public void Seed()
         {

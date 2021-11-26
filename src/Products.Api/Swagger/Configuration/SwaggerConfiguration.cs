@@ -14,7 +14,10 @@ namespace Products.Api.Swagger.Configuration
     {
         private readonly IApiVersionDescriptionProvider _provider;
 
-        public SwaggerConfiguration(IApiVersionDescriptionProvider provider) => _provider = provider;
+        public SwaggerConfiguration(IApiVersionDescriptionProvider provider)
+        {
+            _provider = provider;
+        }
 
         public void Configure(SwaggerGenOptions options)
         {

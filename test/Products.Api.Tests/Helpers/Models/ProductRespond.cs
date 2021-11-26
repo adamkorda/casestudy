@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Products.Api.Tests.Helpers.Models
+﻿namespace Products.Api.Tests.Helpers.Models
 {
     internal class ProductRespond
     {

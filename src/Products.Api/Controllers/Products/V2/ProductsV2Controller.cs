@@ -4,26 +4,27 @@ using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
 
-using Products.Api.Data.Repositories.V2;
+using Products.Api.Data.Core;
+using Products.Api.Data.Repositories.Products.V2;
 using Products.Api.Dtos;
 
-namespace Products.Api.Controllers.V2
+namespace Products.Api.Controllers.Products.V2
 {
     /// <summary>
     /// Products controller
     /// </summary>
     [ApiController]
     [ApiVersion("2.0")]
-    [Route("api/[controller]")]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/products")]
+    [Route("api/v{version:apiVersion}/products")]
     [Produces("application/json")]
-    public class ProductsController : ControllerBase
+    public class ProductsV2Controller : ControllerBase
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IProductRepositoryV2 _productRepository;
         private readonly IMapper _mapper;
-        private readonly ILogger<ProductsController> _logger;
+        private readonly ILogger<ProductsV2Controller> _logger;
 
-        public ProductsController(IProductRepository productRepository, IMapper mapper, ILogger<ProductsController> logger)
+        public ProductsV2Controller(IProductRepositoryV2 productRepository, IMapper mapper, ILogger<ProductsV2Controller> logger)
         {
             _productRepository = productRepository;
             _mapper = mapper;
@@ -46,7 +47,7 @@ namespace Products.Api.Controllers.V2
                 _logger.LogInformation("There are no products stored in database");
             }
 
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(products.Metadata));
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(_mapper.Map<PaginationMetadataDto>(products.Metadata)));
 
             return Ok(_mapper.Map<IEnumerable<ProductDto>>(products));
         }

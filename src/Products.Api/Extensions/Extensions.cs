@@ -20,13 +20,11 @@ namespace Products.Api.Extensions
     {
         public static IServiceCollection AddCorsPolicy(this IServiceCollection services)
         {
-            return services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder.AllowAnyOrigin()
+            return services.AddCors(options
+                => options.AddPolicy("CorsPolicy", builder
+                    => builder.AllowAnyOrigin()
                     .AllowAnyHeader()
-                    .AllowAnyMethod());
-            });
+                    .AllowAnyMethod()));
         }
 
         public static IServiceCollection AddProblemDetails(this IServiceCollection services, bool includeExceptionDetails)
@@ -46,9 +44,6 @@ namespace Products.Api.Extensions
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.ReportApiVersions = true;
-                //options.ApiVersionReader = ApiVersionReader.Combine(
-                //    new QueryStringApiVersionReader("api-version"),
-                //    new HeaderApiVersionReader("X-api-version"));
             });
 
             return services.AddVersionedApiExplorer(options =>

@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 using Products.Api.Data;
 using Products.Api.Data.Extensions;
+using Products.Api.Data.Repositories.Products.V1;
+using Products.Api.Data.Repositories.Products.V2;
 using Products.Api.Data.Seeder;
 using Products.Api.Extensions;
 
@@ -15,10 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddLog4Net();
 
-builder.Services.AddControllers(options =>
-{
-    options.ReturnHttpNotAcceptable = true;
-}).AddFluentValidation(options => options.RegisterValidatorsFromAssemblyContaining<Program>())
+builder.Services.AddControllers(options => options.ReturnHttpNotAcceptable = true).AddFluentValidation(options => options.RegisterValidatorsFromAssemblyContaining<Program>())
 .AddNewtonsoftJson();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -38,8 +37,8 @@ builder.Services.AddCorsPolicy();
 
 builder.Services.AddHealthChecks();
 
-builder.Services.AddScoped<Products.Api.Data.Repositories.V1.IProductRepository, Products.Api.Data.Repositories.V1.ProductRepository>();
-builder.Services.AddScoped<Products.Api.Data.Repositories.V2.IProductRepository, Products.Api.Data.Repositories.V2.ProductRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductRepositoryV2, ProductRepositoryV2>();
 builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
 
 var app = builder.Build();

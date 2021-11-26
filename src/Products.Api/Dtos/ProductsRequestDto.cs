@@ -7,7 +7,7 @@
 
         private int _pageSize = DefaultPageSize;
 
-        public int PageNumger { get; set; } = 1;
+        public int PageNumber { get; set; } = 1;
         public int PageSize
         {
             get => _pageSize;

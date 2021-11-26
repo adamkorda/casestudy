@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.JsonPatch.Operations;
-
-using Products.Api.Data.Entities;
-using Products.Api.Dtos;
+﻿using Products.Api.Dtos;
 
 using Swashbuckle.AspNetCore.Filters;
 

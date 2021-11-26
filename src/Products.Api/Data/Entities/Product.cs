@@ -15,5 +15,11 @@
             Price = price;
             Description = description;
         }
+
+        public Product(int id, string name, string imgUri, decimal price, string? description)
+            : this(name, imgUri, price, description)
+        {
+            Id = id;
+        }
     }
 }

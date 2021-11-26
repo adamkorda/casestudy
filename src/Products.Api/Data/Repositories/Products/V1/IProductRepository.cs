@@ -1,7 +1,7 @@
 ﻿using Products.Api.Data.Entities;
 using Products.Api.Data.Repositories.Core;
 
-namespace Products.Api.Data.Repositories.V1
+namespace Products.Api.Data.Repositories.Products.V1
 {
     public interface IProductRepository : IRepository
     {

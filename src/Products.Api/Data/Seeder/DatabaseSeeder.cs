@@ -7,9 +7,7 @@ namespace Products.Api.Data.Seeder
         private readonly ApplicationDbContext _applicationDbContext;
 
         public DatabaseSeeder(ApplicationDbContext applicationDbContext)
-        {
-            _applicationDbContext = applicationDbContext;
-        }
+            => _applicationDbContext = applicationDbContext;
 
         public void Seed()
         {
