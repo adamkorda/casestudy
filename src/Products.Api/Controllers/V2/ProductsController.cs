@@ -2,14 +2,15 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-using Products.Api.Data.Repositories.Core;
-using Products.Api.Models.Requests;
-using Products.Api.Models.Responds;
+using Newtonsoft.Json;
+
+using Products.Api.Data.Repositories.V2;
+using Products.Api.Dtos;
 
 namespace Products.Api.Controllers.V2
 {
     /// <summary>
-    /// test
+    /// Products controller
     /// </summary>
     [ApiController]
     [ApiVersion("2.0")]
@@ -22,12 +23,6 @@ namespace Products.Api.Controllers.V2
         private readonly IMapper _mapper;
         private readonly ILogger<ProductsController> _logger;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="productRepository"></param>
-        /// <param name="mapper"></param>
-        /// <param name="logger"></param>
         public ProductsController(IProductRepository productRepository, IMapper mapper, ILogger<ProductsController> logger)
         {
             _productRepository = productRepository;
@@ -36,29 +31,24 @@ namespace Products.Api.Controllers.V2
         }
 
         /// <summary>
-        /// Creates a TodoItem.
+        /// Gets all products with pagination
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns>A newly created TodoItem</returns>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     POST /Todo
-        ///     {
-        ///        "id": 1,
-        ///        "name": "Item #1",
-        ///        "isComplete": true
-        ///     }
-        ///
-        /// </remarks>
-        /// <response code="200">Returns the newly created item</response>
+        /// <returns>Collection of products</returns>
+        /// <response code="200">Collection of products</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ProductRespond>>> GetProducts(ProductsRequest request)
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts([FromQuery] ProductsRequestDto productsRequest)
         {
-            _logger.LogInformation("Getting all the products");
-            var products = await _productRepository.GetAllProducts();
-            return Ok(_mapper.Map<IEnumerable<ProductRespond>>(products));
+            _logger.LogInformation("Getting all the products with pagination");
+            var products = await _productRepository.GetAllProductsAsync(productsRequest);
+            if (!products.Any())
+            {
+                _logger.LogInformation("There are no products stored in database");
+            }
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(products.Metadata));
+
+            return Ok(_mapper.Map<IEnumerable<ProductDto>>(products));
         }
     }
 }

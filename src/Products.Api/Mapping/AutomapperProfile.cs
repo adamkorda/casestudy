@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 
 using Products.Api.Data.Entities;
-using Products.Api.Models.Responds;
+using Products.Api.Dtos;
 
 namespace Products.Api.Mapping
 {
@@ -9,7 +9,8 @@ namespace Products.Api.Mapping
     {
         public AutomapperProfile()
         {
-            CreateMap<Product, ProductRespond>();
+            CreateMap<Product, ProductDto>();
+            CreateMap<Product, ProductUpdateDto>().ReverseMap();
         }
     }
 }

@@ -6,22 +6,25 @@ using Hellang.Middleware.ProblemDetails;
 using Microsoft.EntityFrameworkCore;
 
 using Products.Api.Data;
-using Products.Api.Data.Repositories;
-using Products.Api.Data.Repositories.Core;
+using Products.Api.Data.Extensions;
+using Products.Api.Data.Seeder;
+using Products.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddLog4Net();
 
-builder.Services.AddControllers()
-    .AddFluentValidation(options => options.RegisterValidatorsFromAssemblyContaining<Program>())
-    .AddNewtonsoftJson();
+builder.Services.AddControllers(options =>
+{
+    options.ReturnHttpNotAcceptable = true;
+}).AddFluentValidation(options => options.RegisterValidatorsFromAssemblyContaining<Program>())
+.AddNewtonsoftJson();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddApiVersioning();
+builder.Services.AddVersioning();
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -35,15 +38,16 @@ builder.Services.AddCorsPolicy();
 
 builder.Services.AddHealthChecks();
 
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<Products.Api.Data.Repositories.V1.IProductRepository, Products.Api.Data.Repositories.V1.ProductRepository>();
+builder.Services.AddScoped<Products.Api.Data.Repositories.V2.IProductRepository, Products.Api.Data.Repositories.V2.ProductRepository>();
+builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
 
 var app = builder.Build();
 
 app.UseProblemDetails();
 app.UseEnrichLogging();
-app.MigrateDatabase();
+app.SeedDatabase();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerWithVersions();

@@ -1,14 +1,18 @@
 ﻿using AutoMapper;
 
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-using Products.Api.Data.Repositories.Core;
-using Products.Api.Models.Responds;
+using Products.Api.Data.Repositories.V1;
+using Products.Api.Dtos;
+using Products.Api.Swagger.Examples;
+
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Products.Api.Controllers.V1
 {
     /// <summary>
-    /// test
+    /// Products controller
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
@@ -21,12 +25,6 @@ namespace Products.Api.Controllers.V1
         private readonly IMapper _mapper;
         private readonly ILogger<ProductsController> _logger;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="productRepository"></param>
-        /// <param name="mapper"></param>
-        /// <param name="logger"></param>
         public ProductsController(IProductRepository productRepository, IMapper mapper, ILogger<ProductsController> logger)
         {
             _productRepository = productRepository;
@@ -35,120 +33,78 @@ namespace Products.Api.Controllers.V1
         }
 
         /// <summary>
-        /// Creates a TodoItem.
+        /// Gets all products
         /// </summary>
-        /// <returns>A newly created TodoItem</returns>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     POST /Todo
-        ///     {
-        ///        "id": 1,
-        ///        "name": "Item #1",
-        ///        "isComplete": true
-        ///     }
-        ///
-        /// </remarks>
-        /// <response code="200">Returns the newly created item</response>
+        /// <returns>Collection of products</returns>
+        /// <response code="200">Collection of products</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ProductRespond>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
             _logger.LogInformation("Getting all the products");
-            var products = await _productRepository.GetAllProducts();
-            return Ok(_mapper.Map<IEnumerable<ProductRespond>>(products));
+            var products = await _productRepository.GetAllProductsAsync();
+            if (!products.Any())
+            {
+                _logger.LogInformation("There are no products stored in database");
+            }
+
+            return Ok(_mapper.Map<IEnumerable<ProductDto>>(products));
         }
 
-
         /// <summary>
-        /// Creates a TodoItem.
+        /// Gets one product by its id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns>A newly created TodoItem</returns>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     GET /50cc09ba-64ad-43be-9655-569400f570ff
-        ///
-        /// </remarks>
-        /// <response code="200">Returns the newly created item</response>
-        /// /// <response code="404">Returns the newly created item</response>
+        /// <returns>Single product</returns>
+        /// <response code="200">Successfully found product</response>
+        /// <response code="404">Product was not found</response>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProductRespond>> GetProduct(Guid id)
+        public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
-            var product = await _productRepository.GetProductById(id);
+            _logger.LogInformation($"Getting one product by id: {id}");
+            var product = await _productRepository.GetProductByIdAsync(id, false);
 
             if (product == null)
             {
+                _logger.LogInformation($"Product with id: {id} does not exist in database");
                 return NotFound();
             }
 
-            return Ok(product);
+            return Ok(_mapper.Map<ProductDto>(product));
         }
 
-        //// PUT: api/Products/5
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutProduct(Guid id, Product product)
-        //{
-        //    if (id != product.Id)
-        //    {
-        //        return BadRequest();
-        //    }
+        /// <summary>
+        /// Updates description of product by its id
+        /// </summary>
+        /// <returns>Single product</returns>
+        /// <response code="204">Product was successfully updated</response>
+        /// <response code="400">Bad request</response>
+        /// <response code="404">Product was not found</response>
+        /// <response code="415">Request content type must be application/json-patch+json</response>
+        [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
+        [SwaggerRequestExample(typeof(JsonPatchDocument<ProductUpdateDto>),typeof(PatchProductDescriptionExample))]
+        public async Task<ActionResult<ProductDto>> UpdateProductDescription(int id, [FromBody] JsonPatchDocument<ProductUpdateDto> patchDoc)
+        {
+            _logger.LogInformation($"Updating product: {id} description");
 
-        //    _context.Entry(product).State = EntityState.Modified;
+            var product = await _productRepository.GetProductByIdAsync(id, true);
+            if (product == null)
+            {
+                _logger.LogInformation($"Product with id: {id} does not exist in database");
+                return NotFound();
+            }
 
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!ProductExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
+            var productToPatch = _mapper.Map<ProductUpdateDto>(product);
+            patchDoc.ApplyTo(productToPatch);
+            _mapper.Map(productToPatch, product);
+            await _productRepository.SaveAsync();
 
-        //    return NoContent();
-        //}
-
-        //// POST: api/Products
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPost]
-        //public async Task<ActionResult<Product>> PostProduct(Product product)
-        //{
-        //    _context.Product.Add(product);
-        //    await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetProduct", new { id = product.Id }, product);
-        //}
-
-        //// DELETE: api/Products/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteProduct(Guid id)
-        //{
-        //    var product = await _context.Product.FindAsync(id);
-        //    if (product == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Product.Remove(product);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
-
-        //private bool ProductExists(Guid id)
-        //{
-        //    return _context.Product.Any(e => e.Id == id);
-        //}
+            return NoContent();
+        }
     }
 }

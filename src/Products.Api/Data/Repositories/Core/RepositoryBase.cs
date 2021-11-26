@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Products.Api.Data.Repositories.Core
 {
-    public abstract class RepositoryBase<TEntity> : IRepository<TEntity>
+    public abstract class RepositoryBase<TEntity> : IRepository
         where TEntity : class
     {
         protected readonly DbSet<TEntity> _entities;
@@ -17,18 +17,19 @@ namespace Products.Api.Data.Repositories.Core
             _entities = dbContext.Set<TEntity>();
         }
 
-        public void Create(TEntity entity) => _entities.Add(entity);
-        public void Delete(TEntity entity) => _entities.Remove(entity);
         public async Task SaveAsync() => await _dbContext.SaveChangesAsync();
-        public IQueryable<TEntity> Select() => _entities;
-        public IQueryable<TEntity> Select(Expression<Func<TEntity, bool>> filter) => _entities.Where(filter);
-        public void Update(TEntity entity) => _entities.Update(entity);
-        public void Update(IEnumerable<TEntity> entities) => _entities.UpdateRange(entities);
+
+        public IQueryable<TEntity> Select() => _entities.AsNoTracking();
+
+        public IQueryable<TEntity> Select(Expression<Func<TEntity, bool>> filter, bool trackChanges)
+            => trackChanges ? _entities.Where(filter) : _entities.Where(filter).AsNoTracking();
+
         public void Dispose()
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
         public async ValueTask DisposeAsync()
         {
             await DisposeAsyncCore();
@@ -48,6 +49,7 @@ namespace Products.Api.Data.Repositories.Core
                 _disposedValue = true;
             }
         }
+
         protected virtual async ValueTask DisposeAsyncCore()
         {
             if (_dbContext is not null)
