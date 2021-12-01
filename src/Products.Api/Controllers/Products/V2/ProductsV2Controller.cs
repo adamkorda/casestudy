@@ -36,8 +36,10 @@ namespace Products.Api.Controllers.Products.V2
         /// </summary>
         /// <returns>Collection of products</returns>
         /// <response code="200">Collection of products</response>
+        /// <response code="500">Error due to server failure (e.g. database connectivity)</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts([FromQuery] ProductsRequestDto productsRequest)
         {
             _logger.LogInformation("Getting all the products with pagination");

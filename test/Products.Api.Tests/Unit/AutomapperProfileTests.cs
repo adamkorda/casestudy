@@ -2,6 +2,7 @@
 
 using FluentAssertions;
 
+using Products.Api.Data.Core;
 using Products.Api.Data.Entities;
 using Products.Api.Dtos;
 using Products.Api.Mapping;
@@ -47,6 +48,17 @@ namespace Products.Api.Tests.Unit
             var destination = new Product(10, "name", "uri", 150, "description");
             _mapper.Map(source, destination);
             destination.Description.Should().Be(source.Description);
+        }
+
+        [Fact]
+        public void All_properties_of_pagination_metadata_are_fully_mapped_into_available_properties_of_pagination_metadata_dto()
+        {
+            var source = new PaginationMetadata { PageNumber = 10, TotalPages = 100 };
+            var destination = _mapper.Map<PaginationMetadataDto>(source);
+            destination.PageNumber.Should().Be(10);
+            destination.TotalPages.Should().Be(100);
+            destination.HasNext.Should().BeTrue();
+            destination.HasPrevious.Should().BeTrue();
         }
     }
 }

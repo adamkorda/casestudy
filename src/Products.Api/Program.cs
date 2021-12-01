@@ -35,7 +35,8 @@ builder.Services.AddProblemDetails(builder.Environment.IsDevelopment() || builde
 
 builder.Services.AddCorsPolicy();
 
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>();
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductRepositoryV2, ProductRepositoryV2>();
@@ -51,8 +52,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerWithVersions();
 }
-
-app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/health");

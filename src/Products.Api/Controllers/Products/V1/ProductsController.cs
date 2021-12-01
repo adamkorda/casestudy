@@ -37,8 +37,10 @@ namespace Products.Api.Controllers.Products.V1
         /// </summary>
         /// <returns>Collection of products</returns>
         /// <response code="200">Collection of products</response>
+        /// <response code="500">Error due to server failure (e.g. database connectivity)</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
             _logger.LogInformation("Getting all the products");
@@ -57,9 +59,11 @@ namespace Products.Api.Controllers.Products.V1
         /// <returns>Single product</returns>
         /// <response code="200">Successfully found product</response>
         /// <response code="404">Product was not found</response>
+        /// <response code="500">Error due to server failure (e.g. database connectivity)</response>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
             _logger.LogInformation($"Getting one product by id: {id}");
@@ -82,11 +86,13 @@ namespace Products.Api.Controllers.Products.V1
         /// <response code="400">Bad request</response>
         /// <response code="404">Product was not found</response>
         /// <response code="415">Request content type must be application/json-patch+json</response>
+        /// <response code="500">Error due to server failure (e.g. database connectivity)</response>
         [HttpPatch("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerRequestExample(typeof(JsonPatchDocument<ProductUpdateDto>), typeof(PatchProductDescriptionExample))]
         public async Task<ActionResult<ProductDto>> UpdateProductDescription(int id, [FromBody] JsonPatchDocument<ProductUpdateDto> patchDoc)
         {
